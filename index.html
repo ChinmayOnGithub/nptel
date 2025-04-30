@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>NPTEL Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e6e6e6;
+    }
+
+    #header {
+      background: #004d99;
+      color: white;
+      padding: 15px;
+      border-bottom: 2px solid #00264d;
+    }
+
+    #week-nav {
+      background: #f0f0f0;
+      padding: 10px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .week-btn {
+      padding: 8px 15px;
+      background: #ddd;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .week-btn.active {
+      background: #004d99;
+      color: white;
+    }
+
+    #main-container {
+      display: flex;
+      margin: 20px;
+      gap: 20px;
+      flex-direction: column;
+    }
+
+    .question-panel {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      order: 2;
+    }
+
+    #sidebar {
+      width: 100%;
+      background: white;
+      padding: 15px;
+      border: 1px solid #ccc;
+      order: 1;
+    }
+
+    .option {
+      margin: 10px 0;
+      padding: 12px;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      background: #f8f8f8;
+      transition: all 0.2s;
+    }
+
+    .option.selected {
+      background: #cce5ff !important;
+      border-color: #004d99 !important;
+    }
+
+    .option.correct {
+      background: #d4edda !important;
+      border-color: #28a745 !important;
+    }
+
+    .option.wrong {
+      background: #f8d7da !important;
+      border-color: #dc3545 !important;
+    }
+
+    .qno-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .qno {
+      padding: 8px;
+      border: 2px solid #ddd;
+      text-align: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .qno.current {
+      background: #004d99 !important;
+      color: white !important;
+      border-color: #00264d !important;
+    }
+
+    .qno.answered {
+      background: #e6f3ff;
+      border-color: #004d99;
+    }
+
+    button {
+      background: #004d99;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    #score {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+    }
+
+    @media (min-width: 768px) {
+      #main-container {
+        flex-direction: row;
+      }
+
+      #sidebar {
+        width: 300px;
+        order: 2;
+      }
+
+      .question-panel {
+        order: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header">
+    <h2 style="margin:0; font-size:1.4rem">NPTEL Practice - Business: From Start to Scale</h2>
+  </div>
+
+  <div id="week-nav"></div>
+
+  <div id="main-container">
+    <div class="question-panel">
+      <div id="question" style="font-size:1.1rem; margin-bottom:15px;"></div>
+      <div id="options" style="margin: 20px 0;"></div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <button onclick="prevQuestion()">← Previous</button>
+        <button onclick="nextQuestion()">Next →</button>
+        <!-- <button onclick="showAnswer()">Show Answer</button> -->
+        <!-- <button onclick="showAnswer()">Show Answer</button> -->
+        <button onclick="clearResponse()">Clear Response</button>
+        <button onclick="calculateScore()" style="background:#28a745">Submit Week</button>
+      </div>
+    </div>
+
+    <div id="sidebar">
+      <h3 style="margin-top:0">Current Week Questions</h3>
+      <div class="qno-grid" id="qgrid"></div>
+      <div id="score"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentWeek = 0;
+    let currentQuestion = 0;
+    let questionsByWeek = [];
+    let userAnswers = {};
+    let submittedWeeks = {};
+
+    // Load questions from CSV
+    fetch('questions.csv')
+      .then(response => response.text())
+      .then(data => {
+        const allQuestions = data.split('\n').slice(1)
+          .filter(line => line.trim())
+          .map(line => {
+            const [question, ...rest] = line.split(';');
+            return {
+              question: question.trim(),
+              options: rest.slice(0, 4).map(opt => opt.trim()),
+              correct: rest[4].trim()
+            };
+          });
+
+        // Split into 12 weeks with 10 questions each
+        for (let i = 0; i < 12; i++) {
+          questionsByWeek.push(allQuestions.slice(i * 10, (i + 1) * 10));
+        }
+
+        initPractice();
+      });
+
+    function initPractice() {
+      // Create week navigation
+      const weekNav = document.getElementById('week-nav');
+      weekNav.innerHTML = questionsByWeek.map((_, i) =>
+        `<div class="week-btn ${i === 0 ? 'active' : ''}" onclick="switchWeek(${i})">Week ${i + 1}</div>`
+      ).join('');
+
+      showWeek(currentWeek);
+    }
+
+    function switchWeek(weekIndex) {
+      currentWeek = weekIndex;
+      currentQuestion = 0;
+      document.querySelectorAll('.week-btn').forEach(btn =>
+        btn.classList.remove('active'));
+      document.querySelectorAll('.week-btn')[weekIndex].classList.add('active');
+      showWeek(weekIndex);
+    }
+
+    function showWeek(weekIndex) {
+      const questions = questionsByWeek[weekIndex];
+
+      // Update question grid
+      const qgrid = document.getElementById('qgrid');
+      qgrid.innerHTML = questions.map((_, i) =>
+        `<div class="qno ${userAnswers[weekIndex]?.[i] ? 'answered' : ''}" 
+                      onclick="gotoQuestion(${i})">${i + 1}</div>`
+      ).join('');
+
+      showQuestion(0);
+    }
+
+    // Modified showQuestion function to add ABCD labels
+    function showQuestion(index) {
+      currentQuestion = index;
+      const q = questionsByWeek[currentWeek][index];
+      const labels = ['a', 'b', 'c', 'd'];
+
+      document.getElementById('question').innerHTML = `
+        <div style="margin-bottom: 15px; font-size: 1.2rem; font-weight: bold; color: #333;">
+          Q${index + 1}:
+        </div>
+        <div style="font-size: 1.1rem; line-height: 1.6; color: #555;">
+          ${q.question}
+        </div>`;
+
+
+      document.getElementById('options').innerHTML = q.options.map((opt, i) => `
+                <div class="option ${isSelected(opt) ? 'selected' : ''}" 
+                    ${submittedWeeks[currentWeek] ? '' : `onclick="selectOption('${opt.replace(/'/g, "\\'")}')"`}
+                    style="${submittedWeeks[currentWeek] ? 'cursor: not-allowed; opacity: 0.8' : ''}">
+                    <b>${labels[i]}.</b> ${opt}
+                    ${showCorrectMark(opt)}
+                </div>
+      `).join('');
+
+      // Update grid current question highlight
+      document.querySelectorAll('.qno').forEach((el, i) => {
+        el.classList.toggle('current', i === index);
+        el.classList.toggle('answered', userAnswers[currentWeek]?.[i] !== undefined);
+      });
+    }
+
+    function isSelected(option) {
+      return userAnswers[currentWeek]?.[currentQuestion] === option;
+    }
+
+    function showCorrectMark(option) {
+      if (submittedWeeks[currentWeek] && option === questionsByWeek[currentWeek][currentQuestion].correct) {
+        return ' ✓';
+      }
+      return '';
+    }
+
+    function selectOption(option) {
+
+      // only one option should be highlighted at a time
+      const options = document.querySelectorAll('.option');
+      options.forEach(opt => {
+        opt.classList.remove('selected');
+        const optText = opt.textContent.replace(' ✓', '').trim().substring(3); // Remove ABC
+        if (optText === option) {
+          opt.classList.add('selected');
+        }
+      });
+      // Check if the week is submitted
+      if (submittedWeeks[currentWeek]) {
+        showAnswer();
+        return;
+      }
+      if (submittedWeeks[currentWeek]) return;
+
+      if (!userAnswers[currentWeek]) userAnswers[currentWeek] = {};
+      const currentAnswer = userAnswers[currentWeek][currentQuestion];
+
+      // Toggle selection
+      userAnswers[currentWeek][currentQuestion] = currentAnswer === option ? undefined : option;
+
+      // Update visual feedback WITHOUT CHANGING QUESTION
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('correct', 'wrong');
+        const optText = opt.textContent.replace(' ✓', '').trim().substring(3); // Remove ABC
+
+        if (submittedWeeks[currentWeek]) {
+          if (optText === questionsByWeek[currentWeek][currentQuestion].correct) {
+            opt.classList.add('correct');
+          }
+        }
+        else {
+          if (optText === userAnswers[currentWeek][currentQuestion]) {
+            opt.classList.add('selected');
+          }
+        }
+      });
+      // Removed showWeek() call here - this was causing the reset
+    }
+
+    function showAnswer() {
+      const correct = questionsByWeek[currentWeek][currentQuestion].correct;
+      document.querySelectorAll('.option').forEach(opt => {
+        const optText = opt.textContent.replace(' ✓', '').trim();
+        if (optText === correct) {
+          opt.classList.add('correct');
+        }
+      });
+    }
+
+    function clearResponse() {
+      if (submittedWeeks[currentWeek]) return;
+      if (userAnswers[currentWeek]) delete userAnswers[currentWeek][currentQuestion];
+      showQuestion(currentQuestion);
+    }
+
+    function calculateScore() {
+      const weekQuestions = questionsByWeek[currentWeek];
+      let score = 0;
+
+      weekQuestions.forEach((q, index) => {
+        if (userAnswers[currentWeek]?.[index] === q.correct) {
+          score++;
+        }
+      });
+
+      submittedWeeks[currentWeek] = true;
+      document.getElementById('score').innerHTML = `
+      <h4> Week ${currentWeek + 1} Score: ${score} /10</h4>
+      <p style="margin:5px 0">Correct Answers: ${weekQuestions.filter((q, index) => userAnswers[currentWeek]?.[index] === q.correct).length}</p>
+      <p style="margin:5px 0">Incorrect Answers: ${weekQuestions.length - weekQuestions.filter((q, index) => userAnswers[currentWeek]?.[index] === q.correct).length}</p>
+        ${score < 8 ? '<p style="color:#dc3545; margin:5px 0">❌ Score below certification threshold (Need ≥8)</p>' :
+          '<p style="color:#28a745; margin:5px 0">✅ Certification requirement met!</p>'
+        }
+            `;
+
+      showWeek(currentWeek);
+    }
+
+    function prevQuestion() {
+      if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < 9) showQuestion(currentQuestion + 1);
+    }
+
+    function gotoQuestion(index) {
+      showQuestion(index);
+    }
+  </script>
+</body>
+
+</html>
