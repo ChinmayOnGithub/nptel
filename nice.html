@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Strategy MCQ Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #header {
+      background: #004d99;
+      color: white;
+      display: flex;
+      padding: 15px;
+      border-bottom: 2px solid #00264d;
+    }
+
+    .quiz-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: auto;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .score {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #555;
+    }
+
+    .question {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .option {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #e0e0e0;
+    }
+
+    .option.selected {
+      background-color: #d3e4ff;
+    }
+
+    .option.correct {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .option.incorrect {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 2px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header">
+    <h2 style="margin:0; font-size:1.4rem">NPTEL Practice - Business: From Start to Scale</h2>
+    <a href="index.html" style="margin-left: auto; color: white;">Weekly Assignments</a>
+  </div>
+  <div class="quiz-container">
+    <h1>Business Strategy MCQ Quiz</h1>
+    <div class="score">Score: <span id="score">0</span> / <span id="total"></span></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="navigation">
+      <button id="prev" onclick="prevQuestion()">Previous</button>
+      <button id="next" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "If a company has all the functions in its value chain, it is called:", answer: "Multi-functional business", options: ["Multi-functional business", "Single-function business", "Outsourced business", "Fragmented business"] },
+      { question: "Apollo Hospitals is an example of:", answer: "Healthcare service business", options: ["Healthcare service business", "Manufacturing business", "Retail business", "Technology business"] },
+      { question: "Strategy is essentially based on:", answer: "Economy, Industry, company and competitor analysis", options: ["Economy, Industry, company and competitor analysis", "Product design only", "Employee training", "Financial planning only"] },
+      { question: "Business growth depends primarily on:", answer: "Products and markets", options: ["Products and markets", "Employee count", "Office size", "Advertising budget"] },
+      { question: "Which of the following statements is not true?", answer: "Conglomerates do not require business development", options: ["Conglomerates do not require business development", "Business development is essential for growth", "Conglomerates diversify risks", "Business development involves market analysis"] },
+      { question: "Ford’s earliest Model T car concept involved:", answer: "Product standardisation", options: ["Product standardisation", "Mass customization", "Luxury branding", "Niche marketing"] },
+      { question: "In simple terms, strategy is a:", answer: "Plan of action", options: ["Plan of action", "Financial budget", "Marketing campaign", "Product design"] },
+      { question: "To have a successful and sustainable strategic journey in the face of new competition, established companies must erect:", answer: "Structural barriers", options: ["Structural barriers", "Financial barriers", "Marketing barriers", "Operational barriers"] },
+      { question: "Hatsun’s sustainable business success in the dairy business has been due to:", answer: "Its diversification from milk to a wide range of milk and milk products", options: ["Its diversification from milk to a wide range of milk and milk products", "High advertising budget", "Limited product range", "Export focus"] },
+      { question: "Marketing of chemicals falls into the following category:", answer: "B2B", options: ["B2B", "B2C", "D2C", "C2C"] },
+      { question: "Business developer primarily must have understanding of:", answer: "Value chain", options: ["Value chain", "Stock market", "Graphic design", "Social media"] },
+      { question: "Strategic marketing looks at:", answer: "Market segmentation", options: ["Market segmentation", "Employee training", "Financial forecasting", "Product manufacturing"] },
+      { question: "Market oriented companies are concerned about:", answer: "Consumer needs", options: ["Consumer needs", "Production capacity", "Employee benefits", "Stock prices"] },
+      { question: "4 Ps in marketing mix:", answer: "Product, Price, Place, Promotion", options: ["Product, Price, Place, Promotion", "Plan, Process, People, Profit", "Product, Plan, Price, People", "Promotion, Price, Plan, Process"] },
+      { question: "Strategy good start of business:", answer: "Vision, mission", options: ["Vision, mission", "Profit, loss", "Hiring, firing", "Advertising, sales"] },
+      { question: "Strategy once set is:", answer: "Plans and projects", options: ["Plans and projects", "Fixed forever", "Marketing campaigns", "Employee training"] },
+      { question: "Target has demonstrated that a retailer can have:", answer: "Multiple store formats under one brand", options: ["Multiple store formats under one brand", "Single store format", "Online-only presence", "Franchise model"] },
+      { question: "Amul’s business growth is primarily based on its unique foundational model of:", answer: "Cooperative dairy movement", options: ["Cooperative dairy movement", "Corporate ownership", "Franchise model", "Export focus"] },
+      { question: "The concept of ‘marketing funnel’ for a product describes the gap between:", answer: "Potential demand in the market and actual repetitive purchase", options: ["Potential demand in the market and actual repetitive purchase", "Production and sales", "Advertising and profit", "Employee training and sales"] },
+      { question: "The relationship between market demand and marketing expenditure is called:", answer: "Market demand function", options: ["Market demand function", "Sales forecast", "Profit margin", "Production schedule"] },
+      { question: "Timeseries analysis, in sales and marketing, is helpful in:", answer: "Demand forecasting", options: ["Demand forecasting", "Employee hiring", "Product design", "Financial auditing"] },
+      { question: "Revenue of a company depends:", answer: "Both on the scale and scope of the business", options: ["Both on the scale and scope of the business", "Only on scale", "Only on scope", "Only on advertising"] },
+      { question: "Fast Moving Consumer Goods (FMCG) companies are usually:", answer: "Sales and marketing driven", options: ["Sales and marketing driven", "Production driven", "Finance driven", "Technology driven"] },
+      { question: "Marico has been integrating sustainability goals as part of its:", answer: "ESG strategy", options: ["ESG strategy", "Marketing strategy", "Production strategy", "Financial strategy"] },
+      { question: "Successful business development requires:", answer: "Proactive approach", options: ["Proactive approach", "Reactive approach", "Static approach", "Financial approach"] },
+      { question: "Which of the following is not a factor of market segmentation?", answer: "Financial position of the company", options: ["Financial position of the company", "Geographic location", "Demographic factors", "Behavioral patterns"] },
+      { question: "Successful business development requires:", answer: "Proof of concept, Proof of product and Proof of business", options: ["Proof of concept, Proof of product and Proof of business", "Only proof of concept", "Only proof of product", "Only proof of business"] },
+      { question: "Continuous new diversified business development, ahead of others, requires investments in:", answer: "New Products – New Markets", options: ["New Products – New Markets", "Old products – Old markets", "New products – Old markets", "Old products – New markets"] },
+      { question: "For succeeding, any business requires holistically:", answer: "A combination of Core Competence, Strategic Planning and Strategic Execution", options: ["A combination of Core Competence, Strategic Planning and Strategic Execution", "Only core competence", "Only strategic planning", "Only strategic execution"] },
+      { question: "New entry happens in an industry facing technological obsolescence when the new entrants have:", answer: "Proprietary technologies and strong finances", options: ["Proprietary technologies and strong finances", "Low finances", "No technology", "Weak management"] },
+      { question: "The threat of substitute products by a firm in an industry is the highest when:", answer: "The firm has disruptive technologies, relative to other firms", options: ["The firm has disruptive technologies, relative to other firms", "The firm has outdated technology", "The firm has high prices", "The firm has low quality"] },
+      { question: "Automobile and automobile component industries have:", answer: "B2C, B2B and D2C business development", options: ["B2C, B2B and D2C business development", "Only B2C", "Only B2B", "Only D2C"] },
+      { question: "Which of the following is not an emerging industry?", answer: "Iron and Steel", options: ["Iron and Steel", "Artificial Intelligence", "Renewable Energy", "Biotechnology"] },
+      { question: "Cost leadership in product design and manufacture can be achieved with:", answer: "Value engineering", options: ["Value engineering", "High pricing", "Mass advertising", "Limited production"] },
+      { question: "Competitive advantage is the ability of a firm to develop, produce and deliver its products or services with:", answer: "High quality and low cost", options: ["High quality and low cost", "Low quality and high cost", "High quality and high cost", "Low quality and low cost"] },
+      { question: "India’s industrial development in the 1960s to 1980s was based on:", answer: "Technology imports", options: ["Technology imports", "Local innovation", "Export focus", "Low-cost labor"] },
+      { question: "An industry typically serves:", answer: "Many markets through a product line", options: ["Many markets through a product line", "Single market", "No markets", "Only export markets"] },
+      { question: "REITS is an example of:", answer: "Housing markets", options: ["Housing markets", "Stock markets", "Commodity markets", "Labor markets"] },
+      { question: "Which of the following represents both backward and forward integration for the Indian finished chemical industry?", answer: "Bulk chemicals and intermediates as well as specialty chemicals and pharmaceuticals", options: ["Bulk chemicals and intermediates as well as specialty chemicals and pharmaceuticals", "Only bulk chemicals", "Only specialty chemicals", "Only pharmaceuticals"] },
+      { question: "Which of the following industries will be directly benefitted by the ‘China Plus One’ manufacturing programme of MNCs and the developed world?", answer: "Consumer electronics", options: ["Consumer electronics", "Textile industry", "Food processing", "Mining industry"] },
+      { question: "For most industries, the umbrella forecast that sets the context is:", answer: "Macroeconomic forecast", options: ["Macroeconomic forecast", "Microeconomic forecast", "Sales forecast", "Production forecast"] },
+      { question: "Which digital technology will help in demand forecasting through real-time observation and analysis methodology?", answer: "Artificial intelligence", options: ["Artificial intelligence", "Blockchain", "Virtual reality", "Cloud computing"] },
+      { question: "Provocative and retaliative competition will lead to:", answer: "Higher industry rivalry", options: ["Higher industry rivalry", "Lower industry rivalry", "No competition", "Market monopoly"] },
+      { question: "For a company, the largest market is the following:", answer: "Potential market", options: ["Potential market", "Current market", "Niche market", "Local market"] },
+      { question: "Specialty chemicals are characterized by:", answer: "Technology differentiation", options: ["Technology differentiation", "Low cost", "Mass production", "No differentiation"] },
+      { question: "In competitor analysis, the following is often ignored as a relevant factor:", answer: "Organizational leadership", options: ["Organizational leadership", "Market share", "Product quality", "Pricing strategy"] },
+      { question: "An important difference between a consumer market and a business market for a common product (e.g., AC 1.5T) pertains to:", answer: "Difference in sales and marketing approach", options: ["Difference in sales and marketing approach", "No difference", "Product design", "Manufacturing process"] },
+      { question: "The traditional marketing approach assumes the customer to be:", answer: "Reactive", options: ["Reactive", "Proactive", "Neutral", "Uninterested"] },
+      { question: "Which of the following is a cultural factor?", answer: "Ethnicity", options: ["Ethnicity", "Income level", "Education level", "Occupation"] },
+      { question: "A customer typology is a combination of:", answer: "Needs, products and incomes", options: ["Needs, products and incomes", "Products and prices", "Needs and location", "Incomes and age"] },
+      { question: "Design Thinking:", answer: "Decreases human biases of developers and increases customer centricity", options: ["Decreases human biases of developers and increases customer centricity", "Increases developer biases", "Focuses on cost reduction", "Ignores customers"] },
+      { question: "For products with strong operational economics, high purchase price, and high resale value the marketing emphasis should be on:", answer: "Emphasising lifecycle costing and value", options: ["Emphasising lifecycle costing and value", "Low price", "High advertising", "Limited availability"] },
+      { question: "Which of these is an external macro factor influencing consumer behaviour?", answer: "Economic environment", options: ["Economic environment", "Personal preferences", "Individual income", "Product quality"] },
+      { question: "The first step that should be taken by a company towards customer bonding is to achieve:", answer: "Customer awareness", options: ["Customer awareness", "Customer loyalty", "Customer retention", "Customer purchase"] },
+      { question: "The future of marketing will be:", answer: "Personalised selling and marketing", options: ["Personalised selling and marketing", "Mass marketing", "No marketing", "Traditional advertising"] },
+      { question: "The starting point for design of a good marketing plan is:", answer: "Expectation discovery", options: ["Expectation discovery", "Product launch", "Pricing strategy", "Advertising budget"] },
+      { question: "The fundamental driver to enter a macro market (Country or Regional Bloc) is:", answer: "GDP or Economic size", options: ["GDP or Economic size", "Population size", "Cultural factors", "Political stability"] },
+      { question: "VALS segmentation system is in the nature of:", answer: "Psychography", options: ["Psychography", "Geography", "Demography", "Behavior"] },
+      { question: "The challenge of defining market segments lies in:", answer: "Identifying homogeneity within heterogeneity", options: ["Identifying homogeneity within heterogeneity", "Ignoring differences", "Focusing on similarities", "Reducing segments"] },
+      { question: "Mobility as a market requires:", answer: "Servitization of an automobile as a service", options: ["Servitization of an automobile as a service", "Mass production", "Low pricing", "Export focus"] },
+      { question: "Niche market strategy requires analysis based on:", answer: "Special differentiated features and benefits required", options: ["Special differentiated features and benefits required", "Mass market appeal", "Low cost production", "Broad marketing"] },
+      { question: "Same market catered by multiple products of different techs (e.g., EV, hydrogen vehicles) is called:", answer: "Product-driven segmentation", options: ["Product-driven segmentation", "Market-driven segmentation", "Price-driven segmentation", "Customer-driven segmentation"] },
+      { question: "Besides market attractiveness, to review product-market strategies a company must look at its:", answer: "Competitive position", options: ["Competitive position", "Employee count", "Office location", "Advertising budget"] },
+      { question: "Business development in cosmetics is linked to:", answer: "High product segmentation", options: ["High product segmentation", "Low product variety", "Mass production", "Export focus"] },
+      { question: "In market attractiveness vs competitive position analysis, you must take into account:", answer: "Return on investment", options: ["Return on investment", "Employee satisfaction", "Office size", "Advertising spend"] },
+      { question: "Internet social media, despite common global branding, is:", answer: "Geographically segmented", options: ["Geographically segmented", "Not segmented", "Product segmented", "Price segmented"] },
+      { question: "Peer influence and customer recommendation marketing is called:", answer: "Influencer marketing", options: ["Influencer marketing", "Traditional marketing", "Direct marketing", "Mass marketing"] },
+      { question: "Statistical tool for product positioning:", answer: "Conjoint Analysis", options: ["Conjoint Analysis", "Regression Analysis", "Time Series Analysis", "Cluster Analysis"] },
+      { question: "Beyond market share, an important brand audit metric is:", answer: "Share of mind", options: ["Share of mind", "Share of profit", "Share of production", "Share of employees"] },
+      { question: "First-to-market success must be accompanied by:", answer: "Right-to-market", options: ["Right-to-market", "Low pricing", "Mass advertising", "Limited distribution"] },
+      { question: "Advertisement strategy and content stem from:", answer: "The brand objectives", options: ["The brand objectives", "Competitor actions", "Employee ideas", "Customer complaints"] },
+      { question: "Not part of Balanced Scorecard for sales function:", answer: "Training production operators", options: ["Training production operators", "Customer satisfaction", "Sales growth", "Market share"] },
+      { question: "Correct sequence of consumer conversion:", answer: "Awareness-Trial-Purchase-Reorder", options: ["Awareness-Trial-Purchase-Reorder", "Purchase-Trial-Awareness-Reorder", "Trial-Awareness-Purchase-Reorder", "Reorder-Awareness-Trial-Purchase"] },
+      { question: "Combined advantage of digital advertising:", answer: "All the above", options: ["All the above", "Only adaptability", "Only flexibility", "Only cost-effective"] },
+      { question: "Product as a Service (PaaS) promotes:", answer: "Circular economy", options: ["Circular economy", "Linear economy", "Mass production", "Export focus"] },
+      { question: "High pricing based on consumer surplus is called:", answer: "Price skimming", options: ["Price skimming", "Penetration pricing", "Cost-plus pricing", "Discount pricing"] },
+      { question: "Foundation of product brand building:", answer: "Product quality", options: ["Product quality", "Advertising budget", "Packaging design", "Distribution network"] },
+      { question: "Happiest Minds’ business development structure:", answer: "Alliances and partnerships", options: ["Alliances and partnerships", "Sole proprietorship", "Franchise model", "Export focus"] },
+      { question: "Nirma’s detergent market innovation type:", answer: "Frugal innovation", options: ["Frugal innovation", "Disruptive innovation", "Radical innovation", "Incremental innovation"] },
+      { question: "Nirma’s pharmaceuticals entry strategy:", answer: "Acquisition", options: ["Acquisition", "Organic growth", "Joint venture", "Franchising"] },
+      { question: "Delhivery’s early business strategy:", answer: "Complete national coverage", options: ["Complete national coverage", "Local focus", "Export focus", "Niche markets"] },
+      { question: "Delhivery’s distribution model:", answer: "Mesh model", options: ["Mesh model", "Hub-and-spoke model", "Linear model", "Franchise model"] },
+      { question: "Glucon-D for Zydus Wellness is:", answer: "An acquired brand", options: ["An acquired brand", "In-house brand", "Licensed brand", "Franchised brand"] },
+      { question: "Biggest booster for Sugar Free brand positioning:", answer: "Medical product to Wellness product", options: ["Medical product to Wellness product", "Low pricing", "Mass advertising", "Export focus"] },
+      { question: "Airtel’s key to competitive advantage:", answer: "Quality of Service", options: ["Quality of Service", "Low pricing", "Advertising budget", "Employee count"] },
+      { question: "Airtel’s key to sustainable business development:", answer: "Scale", options: ["Scale", "Niche focus", "Export focus", "Low pricing"] },
+      { question: "When Party A gives rights to Party B to sell in a territory:", answer: "Franchising", options: ["Franchising", "Licensing", "Joint venture", "Acquisition"] },
+      { question: "Technical collaborations helped establish which industry in 1950s India:", answer: "Commercial vehicles", options: ["Commercial vehicles", "Textile industry", "Pharmaceuticals", "Consumer electronics"] },
+      { question: "Strategic alliance creates a legal entity?", answer: "No — does not create a new legal entity", options: ["No — does not create a new legal entity", "Yes — creates a new legal entity", "Sometimes", "Depends on the industry"] },
+      { question: "Level of due diligence needed for strategic alliances:", answer: "Higher than collaborations, lower than joint ventures", options: ["Higher than collaborations, lower than joint ventures", "Lower than collaborations", "Higher than joint ventures", "No due diligence needed"] },
+      { question: "Joint ventures create:", answer: "New legal entities with specific intentions", options: ["New legal entities with specific intentions", "No legal entities", "Temporary partnerships", "Franchise agreements"] },
+      { question: "Why JVs are more robust:", answer: "Committed lock-in relationship of the parent companies", options: ["Committed lock-in relationship of the parent companies", "No commitment", "Low investment", "Temporary agreements"] },
+      { question: "Subsidiary company is owned by:", answer: "Parent or holding company", options: ["Parent or holding company", "Franchisee", "Government", "Employees"] },
+      { question: "If many sub-businesses need management:", answer: "Domestic step-down subsidiary", options: ["Domestic step-down subsidiary", "Franchise model", "Joint venture", "Independent businesses"] },
+      { question: "Merger of two companies in the same domain:", answer: "Horizontal merger", options: ["Horizontal merger", "Vertical merger", "Conglomerate merger", "Reverse merger"] },
+      { question: "Small acquisitions bringing specific capabilities are called:", answer: "Bolt-on acquisitions", options: ["Bolt-on acquisitions", "Full acquisitions", "Joint ventures", "Franchises"] },
+      { question: "Modern lean value chains tend to be:", answer: "Asset-light and agile", options: ["Asset-light and agile", "Asset-heavy", "Slow and rigid", "Highly centralized"] },
+      { question: "A company’s value chain can be:", answer: "Outsourced and/or offshored", options: ["Outsourced and/or offshored", "Never outsourced", "Only offshored", "Always in-house"] },
+      { question: "Global supply chain perfection by:", answer: "Apple", options: ["Apple", "Toyota", "Walmart", "Amazon"] },
+      { question: "Highest R&D risk is in:", answer: "Basic and fundamental research", options: ["Basic and fundamental research", "Applied research", "Product development", "Market research"] },
+      { question: "Operations function aims to:", answer: "Maximise quality, efficiency, and effectiveness", options: ["Maximise quality, efficiency, and effectiveness", "Minimise quality", "Only efficiency", "Only effectiveness"] },
+      { question: "Positive negotiation says:", answer: "Enlarge the pie so both benefit", options: ["Enlarge the pie so both benefit", "Reduce the pie", "One-sided benefit", "No benefit"] },
+      { question: "Negotiations drag because:", answer: "Individual and mutual interests are not discussed upfront openly", options: ["Individual and mutual interests are not discussed upfront openly", "Too much discussion", "Clear interests", "No interests"] },
+      { question: "Culture impacts:", answer: "All the above", options: ["All the above", "Only collaboration", "Only competition", "Only negotiation"] },
+      { question: "Positive culture framework needs:", answer: "All the above", options: ["All the above", "Only trust", "Only performance", "Only ethical compliance"] },
+      { question: "Today's industry leaders must handle:", answer: "Global economic and geo-political developments, increasingly", options: ["Global economic and geo-political developments, increasingly", "Only local issues", "Only financial issues", "Only operational issues"] },
+      { question: "New companies entering an industry are influenced by:", answer: "Industry attractiveness", options: ["Industry attractiveness", "Employee availability", "Office location", "Advertising budget"] },
+      { question: "The highest risk and reward is in:", answer: "Introduction phase", options: ["Introduction phase", "Growth phase", "Maturity phase", "Decline phase"] },
+      { question: "Industry fragmentation occurs with:", answer: "High mobility and exit barriers, and low entry barriers", options: ["High mobility and exit barriers, and low entry barriers", "High entry barriers", "Low exit barriers", "No barriers"] },
+      { question: "New energy fuel for futuristic business development (energy giants):", answer: "Hydrogen", options: ["Hydrogen", "Coal", "Oil", "Natural gas"] },
+      { question: "Feasible solution for industry consolidation in fragmentation:", answer: "Low exit barriers", options: ["Low exit barriers", "High entry barriers", "No barriers", "High exit barriers"] },
+      { question: "Industry fragmentation can be countered by:", answer: "Economies of scale through consolidation", options: ["Economies of scale through consolidation", "Small-scale operations", "No consolidation", "High pricing"] },
+      { question: "Mature industries are characterized by:", answer: "Slowing growth", options: ["Slowing growth", "Rapid growth", "No growth", "Declining growth"] },
+      { question: "Mature industries must have:", answer: "All the above", options: ["All the above", "Only proactive understanding", "Only start-up culture", "Only efficiency"] },
+      { question: "Entry into new businesses is accelerated by:", answer: "Mergers and acquisitions", options: ["Mergers and acquisitions", "Organic growth", "Franchising", "Licensing"] },
+      { question: "Organic entry into new businesses gives:", answer: "Full control over the value chain", options: ["Full control over the value chain", "No control", "Partial control", "Shared control"] },
+      { question: "Progressive business development is carried out with:", answer: "Three or Multi horizon strategy", options: ["Three or Multi horizon strategy", "Single horizon strategy", "No strategy", "Short-term strategy"] },
+      { question: "The first key question for a business founder:", answer: "Which industry to be in?", options: ["Which industry to be in?", "How to hire employees?", "Where to advertise?", "What is the budget?"] },
+      { question: "Orchid Chemicals & Pharmaceuticals Ltd deployed:", answer: "All the above", options: ["All the above", "Only strategic alliances", "Only subsidiaries", "Only joint ventures"] },
+      { question: "For an integrated value chain company, the correct statement is:", answer: "R&D is required for Manufacturing to produce a product", options: ["R&D is required for Manufacturing to produce a product", "No R&D needed", "Only marketing needed", "Only finance needed"] },
+      { question: "The advantage of ‘global-local’ matrix organization is:", answer: "Balances local autonomy with global standardisation", options: ["Balances local autonomy with global standardisation", "Only global standardisation", "Only local autonomy", "No balance"] },
+      { question: "Rebuilding a business requires:", answer: "Survival and consolidation of business first, followed by scale-up and diversification in the end", options: ["Survival and consolidation of business first, followed by scale-up and diversification in the end", "Only survival", "Only scale-up", "Only diversification"] },
+      { question: "In Pharmaceutical Quality Consulting, effective business development needs:", answer: "Competence in multiple quality domains and requirements for approvals from multiple regulatory agencies", options: ["Competence in multiple quality domains and requirements for approvals from multiple regulatory agencies", "Only one quality domain", "No regulatory approvals", "Only marketing skills"] },
+      { question: "For successful Quality Consulting, the strategic question is:", answer: "How to compete", options: ["How to compete", "How to advertise", "How to hire", "How to finance"] },
+      { question: "Titan’s core competency in watch engineering is:", answer: "Precision engineering", options: ["Precision engineering", "Mass production", "Low pricing", "Advertising"] },
+      { question: "Titan’s leadership success story emphasizes:", answer: "Innovative leaders and seamless leadership transitions", options: ["Innovative leaders and seamless leadership transitions", "Static leadership", "No leadership", "High employee turnover"] }
+    ];
+
+    // Shuffle array function
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Randomize questions and options
+    const randomizedQuestions = shuffle([...questions]);
+    randomizedQuestions.forEach(q => {
+      q.options = shuffle([...q.options]);
+    });
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const userAnswers = new Array(randomizedQuestions.length).fill(null);
+
+    // DOM elements
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const scoreEl = document.getElementById('score');
+    const totalEl = document.getElementById('total');
+    const feedbackEl = document.getElementById('feedback');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    // Initialize total questions
+    totalEl.textContent = randomizedQuestions.length;
+
+    // Display current question
+    function displayQuestion() {
+      const q = randomizedQuestions[currentQuestionIndex];
+      questionEl.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+      optionsEl.innerHTML = '';
+      q.options.forEach(option => {
+        const div = document.createElement('div');
+        div.classList.add('option');
+        div.textContent = option;
+        if (userAnswers[currentQuestionIndex] === option) {
+          div.classList.add('selected');
+          if (option === q.answer) {
+            div.classList.add('correct');
+          } else {
+            div.classList.add('incorrect');
+          }
+        }
+        div.addEventListener('click', () => selectOption(option));
+        optionsEl.appendChild(div);
+      });
+      feedbackEl.textContent = userAnswers[currentQuestionIndex] ?
+        (userAnswers[currentQuestionIndex] === q.answer ?
+          'Correct!' : `Incorrect. Correct answer: ${q.answer}`) : '';
+      updateButtons();
+    }
+
+    // Handle option selection
+    function selectOption(option) {
+      const q = randomizedQuestions[currentQuestionIndex];
+      if (userAnswers[currentQuestionIndex] === null) {
+        if (option === q.answer) {
+          score++;
+          scoreEl.textContent = score;
+        }
+      } else {
+        if (userAnswers[currentQuestionIndex] === q.answer && option !== q.answer) {
+          score--;
+          scoreEl.textContent = score;
+        } else if (userAnswers[currentQuestionIndex] !== q.answer && option === q.answer) {
+          score++;
+          scoreEl.textContent = score;
+        }
+      }
+      userAnswers[currentQuestionIndex] = option;
+      displayQuestion();
+    }
+
+    // Navigate to previous question
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion();
+      }
+    }
+
+    // Navigate to next question
+    function nextQuestion() {
+      if (currentQuestionIndex < randomizedQuestions.length - 1) {
+        currentQuestionIndex++;
+        displayQuestion();
+      }
+    }
+
+    // Update navigation buttons
+    function updateButtons() {
+      prevBtn.disabled = currentQuestionIndex === 0;
+      nextBtn.disabled = currentQuestionIndex === randomizedQuestions.length - 1;
+    }
+
+    // Initial display
+    displayQuestion();
+  </script>
+</body>
+
+</html>
